@@ -25,8 +25,8 @@ for i in range(1, 6):
             ws['B'+str(i)] = str(now.strftime("%m"))
             ws['C'+str(i)] = str(now.strftime("%Y"))
             ws['D'+str(i)] = str(now.strftime("%H:%M:%S"))
-            ws['E'+str(i)] = str(temperature+"C")
-            ws['F'+str(i)] = str(humidity"%")            
+            ws['E'+str(i)] = str(temperature)+"C"
+            ws['F'+str(i)] = str(humidity)+"%"            
             wb.save("temperature.xlsx")
             time.sleep(1800)
     else:
