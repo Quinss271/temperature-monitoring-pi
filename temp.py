@@ -40,7 +40,7 @@ while True:
             ws['C'+str(i)] = str(now.strftime("%Y"))
             ws['D'+str(i)] = str(now.strftime("%H:%M:%S"))
             ws['E'+str(i)] = str(temperature)+" °C"
-            ws['F'+str(i)] = str(humidity)+"%"
+            ws['F'+str(i)] = str(humidity)+" %"
             
             async def getweather():
                 async with python_weather.Client(format=python_weather.METRIC) as client:
