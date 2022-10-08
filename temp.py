@@ -23,15 +23,16 @@ ws['A1'] = "Day"
 ws['B1'] = "Month"
 ws['C1'] = "Year"
 ws['D1'] = "Time"
-ws['E1'] = "Inside °C"
-ws['F1'] = "humidity %"
-ws['G1'] = "Outside °C"
+ws['E1'] = "Inside-C"
+ws['F1'] = "humidity-%"
+ws['G1'] = "Outside-C"
 ws['H1'] = "Diff"
-wb.save("temperature.xlsx")
+wb.save("temperature3.xlsx")
 i=1
 while True:
     if humidity is not None and temperature is not None:
             i+=1
+            humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
             print('Temp={0:0.1f}*C  Humidity={1:0.1f}%'.format(temperature, humidity))
             
             now = datetime.now()
@@ -39,21 +40,34 @@ while True:
             ws['B'+str(i)] = str(now.strftime("%m"))
             ws['C'+str(i)] = str(now.strftime("%Y"))
             ws['D'+str(i)] = str(now.strftime("%H:%M:%S"))
-            ws['E'+str(i)] = str(temperature)+" °C"
-            ws['F'+str(i)] = str(humidity)+" %"
+            ws['E'+str(i)] = str(temperature)
+            ws['F'+str(i)] = str(humidity)
             
-            async def getweather():
-                async with python_weather.Client(format=python_weather.METRIC) as client:
-                    weather = await client.get("Kyiv")
-                    ws['G'+str(i)] = str(weather.current.temperature)+" °C"
-                    ws['H'+str(i)] = str(temperature-weather.current.temperature)
+            try:
+                async def getweather():
+                    async with python_weather.Client(format=python_weather.METRIC) as client:
+                        weather = await client.get("Melitopol")
+                        ws['G'+str(i)] = str(weather.current.temperature)
+                        ws['H'+str(i)] = str(temperature-weather.current.temperature)
 
-            if __name__ == "__main__":
-                if os.name == "nt":
-                    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-                asyncio.run(getweather())          
-            wb.save("temperature.xlsx")
+                if __name__ == "__main__":
+                    if os.name == "nt":
+                        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+                    asyncio.run(getweather())          
+                wb.save("temperature3.xlsx")
+            except:
+                ws['G'+str(i)] = str("Error")
+                ws['H'+str(i)] = str("Error")
+                wb.save("temperature3.xlsx")
+                print("Error of API")
             time.sleep(1800)
 
     else:
         print('Failed to get reading. Try again!')
+# if __name__ == "__main__":
+#   # see https://stackoverflow.com/questions/45600579/asyncio-event-loop-is-closed-when-getting-loop
+#   # for more details
+#   if os.name == "nt":
+#     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+#   asyncio.run(getweather())
